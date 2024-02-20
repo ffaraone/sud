@@ -3,7 +3,7 @@
 ![pyversions](https://img.shields.io/pypi/pyversions/sud.svg) [![PyPi Status](https://img.shields.io/pypi/v/sud.svg)](https://pypi.org/project/sud/) [![Test SUD](https://github.com/ffaraone/sud/actions/workflows/test.yml/badge.svg)](https://github.com/ffaraone/sud/actions/workflows/test.yml) [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=sud&metric=alert_status)](https://sonarcloud.io/dashboard?id=sud) [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=sud&metric=coverage)](https://sonarcloud.io/dashboard?id=sud) [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=sud&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=sud)
 
 
-   > Sud nuie simme r'o Sud,  
+   > Sud, Sud nuie simme r'o Sud,  
    > nuie simme curt' e nire,  
    > nuie simme buone pe' canta  
    > e faticamm' a faticà  
