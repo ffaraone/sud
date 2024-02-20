@@ -78,6 +78,20 @@ log_cli = false
 [tool.coverage.run]
 branch = true
 
+[tool.coverage.report]
+omit = [
+    "*/__init__.py",
+    "__main__.py",
+]
+
+exclude_lines = [
+    "pragma: no cover",
+    "def __str__",
+    "def __repr__",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+]
+
 [tool.isort]
 profile = "black"
 

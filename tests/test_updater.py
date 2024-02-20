@@ -51,3 +51,19 @@ def test_discover_address(requests_mocker):
     )
 
     assert Updater.discover_address() == "1.2.3.4"
+
+
+def test_discover_address_fail(requests_mocker):
+    requests_mocker.get(
+        CHECK_IP_ADDRESS,
+        status=500,
+    )
+
+    with pytest.raises(SudException) as raised:
+        Updater.discover_address()
+
+    assert raised.value.message == (
+        "Cannot determine current public ip address: "
+        "500 Server Error: Internal Server Error for "
+        "url: https://checkip.amazonaws.com/."
+    )

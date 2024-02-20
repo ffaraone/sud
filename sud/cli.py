@@ -5,6 +5,7 @@ from click import Abort, ClickException, Option, UsageError
 from rich.console import Console
 from rich.logging import RichHandler
 
+from sud import get_version
 from sud.config import Config
 from sud.updater import Updater
 
@@ -38,6 +39,7 @@ class MutuallyExclusiveOption(Option):
     type=click.File("rb"),
     default="/etc/sud/sud-config.yml",
 )
+@click.version_option(get_version())
 @click.pass_context
 def cli(ctx, config_file):
     """
