@@ -39,6 +39,7 @@ rich = "^13.7.0"
 pyyaml = "^6.0.1"
 python-telegram-bot = "^20.8"
 humanize = "^4.9.0"
+rich-click = "^1.7.3"
 
 [tool.poetry.scripts]
 sud = "sud.cli:main"
