@@ -1,6 +1,5 @@
-class SudException(Exception):
-    def __init__(self, message):
-        self.message = message
+from rich_click import ClickException
 
-    def __str__(self) -> str:
-        return self.message
+
+class SudException(ClickException):
+    pass

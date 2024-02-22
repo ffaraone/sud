@@ -1,55 +1,65 @@
 import logging
 
-import click
-from click import Abort, ClickException, Option, UsageError
 from rich.console import Console
 from rich.logging import RichHandler
 
-from sud import get_version
-from sud.config import Config
+from sud import click as click
+from sud import config, get_version
 from sud.updater import Updater
 
 console = Console()
-
-
-class MutuallyExclusiveOption(Option):
-    def __init__(self, *args, **kwargs):
-        self.mutually_exclusive = set(kwargs.pop("mutually_exclusive", []))
-        help = kwargs.get("help", "")
-        if self.mutually_exclusive:
-            ex_str = ", ".join(self.mutually_exclusive)
-            kwargs["help"] = help + (
-                " NOTE: This option is mutually exclusive "
-                f"with options: [{ex_str}]."
-            )
-        super(MutuallyExclusiveOption, self).__init__(*args, **kwargs)
-
-    def handle_parse_result(self, ctx, opts, args):
-        if self.mutually_exclusive.intersection(opts) and self.name in opts:
-            raise UsageError(
-                f"Illegal usage: `{self.name}` is mutually exclusive with "
-                f"options `{', '.join(self.mutually_exclusive)}`."
-            )
 
 
 @click.group()
 @click.option(
     "-c",
     "--config-file",
-    type=click.File("rb"),
+    type=click.Path(
+        dir_okay=False,
+        readable=True,
+        writable=True,
+    ),
     default="/etc/sud/sud-config.yml",
+    help="Load the configuration file from a specific location.",
 )
 @click.version_option(get_version())
-@click.pass_context
+@config.pass_config
 def cli(ctx, config_file):
     """
     SUD the Python Scaleway DNS Updater utility.
     """
-    ctx.obj = Config(config_file)
+
+
+@cli.command(load_config=False)
+# @click.option(
+#     "-H",
+#     "--hostname",
+#     required=True,
+#     prompt="[cyan]Hostname[/cyan]",
+# )
+# @click.option(
+#     "-s",
+#     "--api-secret",
+#     required=True,
+#     prompt="[cyan]Scaleway API secret[/cyan]",
+#     hide_input=True,
+#     confirmation_prompt=True,
+# )
+@click.option(
+    "-s",
+    "--frequency",
+    required=True,
+    prompt="Check frequency",
+    default=300,
+    show_default=True,
+)
+@config.pass_config
+def init(config, frequency):
+    pass
 
 
 @cli.command()
-@click.pass_obj
+@config.pass_config
 def run(config):
     logging.basicConfig(
         level=logging.INFO,
@@ -64,9 +74,9 @@ def run(config):
 def main():
     try:
         cli(standalone_mode=False)
-    except ClickException as e:
+    except click.ClickException as e:
         console.print(f"[bold red]Error:[/bold red] {str(e)}")
-    except Abort:
+    except click.Abort:
         pass
     except Exception:
         console.print_exception()
