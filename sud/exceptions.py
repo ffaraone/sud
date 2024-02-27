@@ -1,4 +1,4 @@
-from rich_click import ClickException
+from click import ClickException
 
 
 class SudException(ClickException):

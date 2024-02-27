@@ -9,7 +9,6 @@ packages = [
     { include = "sud" },
 ]
 
-
 documentation = "https://github.com/ffaraone/sud"
 homepage = "https://github.com/ffaraone/sud"
 repository = "https://github.com/ffaraone/sud"
@@ -29,46 +28,36 @@ classifiers = [
 
 keywords = ["sud", "scaleway", "dns", "dynamic", "dynamicdns"]
 
-
+[tool.poetry.scripts]
+sud = "sud.cli:app"
 
 [tool.poetry.dependencies]
 python = ">=3.10,<4"
-requests = "^2.31.0"
-click = "^8.1.7"
-rich = "^13.7.0"
-pyyaml = "^6.0.1"
-python-telegram-bot = "^20.8"
 humanize = "^4.9.0"
-rich-click = "^1.7.3"
-
-[tool.poetry.scripts]
-sud = "sud.cli:main"
+python-telegram-bot = "^20.8"
+pyyaml = "^6.0.1"
+requests = "^2.31.0"
+rich = "^13.7.0"
+typer = {extras = ["all"], version = "^0.9.0"}
 
 [tool.poetry.group.dev.dependencies]
+ruff = "^0.2.2"
 ipython = "^8.21.0"
-pytest = "^8.0.1"
-black = "^24.2.0"
-isort = "^5.13.2"
-flake8 = "^7.0.0"
-flake8-pytest-style = "^1.7.2"
-flake8-bugbear = "^24.2.6"
-flake8-debugger = "^4.1.2"
-pytest-randomly = "^3.15.0"
-pytest-cov = "^4.1.0"
-flake8-black = "^0.3.6"
-flake8-isort = "^6.1.1"
-pytest-mock = "^3.12.0"
-responses = "^0.25.0"
-pytest-deadfixtures = "^2.2.1"
 mypy = "^1.8.0"
-types-requests = "^2.31.0.20240218"
+poetry-plugin-sort = "^0.2.1"
+pytest = "^8.0.1"
+pytest-asyncio = "^0.23.5"
+pytest-cov = "^4.1.0"
+pytest-deadfixtures = "^2.2.1"
+pytest-mock = "^3.12.0"
+pytest-randomly = "^3.15.0"
+responses = "^0.25.0"
 types-pyyaml = "^6.0.12.12"
-
+types-requests = "^2.31.0.20240218"
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
-
 
 [tool.pytest.ini_options]
 testpaths = "tests"
@@ -93,11 +82,29 @@ exclude_lines = [
     "if __name__ == .__main__.:",
 ]
 
-[tool.isort]
-profile = "black"
+[tool.ruff]
+extend-exclude = [".vscode", ".devcontainer"]
+output-format = "full"
 
-[tool.black]
-line-length = 79
+[tool.ruff.lint]
+
+select = [
+    "E",  # w errors
+    "W",  # pycodestyle warnings
+    "F",  # pyflakes
+    "I",  # isort
+    "B",  # flake8-bugbear
+    "C4",  # flake8-comprehensions
+    "UP",  # pyupgrade,
+    "PT",  # flake8-pytest-style
+    "T10",  # flake8-pytest-style
+]
+ignore = [
+    "PT004", # fixture '{name}' does not return anything, add leading underscore
+    "PT011", # pytest.raises({exception}) is too broad, set the match parameter or use a more specific exception
+    "B008",  # do not perform function calls in argument defaults
+]
+
 
 [tool.mypy]
 warn_no_return = false

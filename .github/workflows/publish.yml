@@ -20,7 +20,7 @@ jobs:
         poetry install
     - name: Linting
       run: |
-        flake8
+        ruff check .
     - name: Testing
       run: |
         pytest

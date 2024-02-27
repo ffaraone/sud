@@ -1,4 +1,4 @@
-from sud.cli import main
+from sud.cli import app
 
 if __name__ == "__main__":
-    main()
+    app()
