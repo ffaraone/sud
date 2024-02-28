@@ -24,9 +24,7 @@ def _get_git_revision(path):
 
 def get_revision():
     package_dir = os.path.dirname(__file__)
-    checkout_dir = os.path.normpath(
-        os.path.join(package_dir, os.pardir, os.pardir)
-    )
+    checkout_dir = os.path.normpath(os.path.join(package_dir, os.pardir, os.pardir))
     path = os.path.join(checkout_dir)
     if os.path.exists(path):
         return _get_git_revision(path)

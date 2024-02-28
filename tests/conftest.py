@@ -56,8 +56,8 @@ def telegram_config_factory():
 @pytest.fixture()
 def config(mocker, config_file_factory, telegram_config_factory):
     config_file = config_file_factory(
-        notifications={"telegram": telegram_config_factory},
+        notifications={"telegram": telegram_config_factory()},
     )
-    mocker.patch.object(Config, "load")
     c = Config(mocker.MagicMock())
     c._config = config_file
+    return c

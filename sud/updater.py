@@ -10,22 +10,13 @@ import requests
 import telegram
 
 from sud.config import Config
+from sud.constants import (
+    CHECK_IP_ADDRESS,
+    SCALEWAY_API_BASE_URL,
+    TG_CREATED_MSG,
+    TG_UPDATED_MSG,
+)
 from sud.exceptions import SudException
-
-CHECK_IP_ADDRESS = "https://checkip.amazonaws.com/"
-SCALEWAY_API_BASE_URL = "https://api.scaleway.com/domain/v2beta1/"
-TG_CREATED_MSG = """
-The DNS record (A) for <b><u>{name}</u></b> has been created:
-
-<span class="tg-spoiler"><b>{address}</b></span>
-"""
-TG_UPDATED_MSG = """
-The DNS record (A) for <b><u>{name}</u></b> has been updated:
-
-previous: <s>{previous}</s>
-current: <span class="tg-spoiler"><b>{address}</b></span>
-"""
-
 
 logger = logging.getLogger(__name__)
 
@@ -53,9 +44,7 @@ class ARecordInfo:
         return cls(name, domain)
 
     def get_dns_name(self):
-        return (
-            f"{self.name}.{self.domain}." if self.name else f"{self.domain}."
-        )
+        return f"{self.name}.{self.domain}." if self.name else f"{self.domain}."
 
 
 class Updater:
@@ -71,7 +60,7 @@ class Updater:
         except requests.RequestException as e:
             raise SudException(
                 f"Cannot determine current public ip address: {str(e)}.",
-            )
+            ) from e
 
     def get_record(self) -> ARecordInfo | None:
         info = ARecordInfo.from_hostname(self._config.hostname)
@@ -104,8 +93,8 @@ class Updater:
         except requests.RequestException as e:
             raise SudException(
                 "Cannot retrieve information for A "
-                f"record {info.name} from zone {info.domain}: {e}",
-            )
+                f"record `{info.name}` from zone `{info.domain}`: {e}",
+            ) from e
 
     def add_record(self, address: str) -> ARecordInfo:
         info = ARecordInfo.from_hostname(self._config.hostname)
@@ -151,8 +140,13 @@ class Updater:
         while True:
             try:
                 self.update()
+            except KeyboardInterrupt:
+                logger.info("Exiting...")
+                return
             except SudException as e:
                 logger.error(f"Error while updating: {e}")
+                time.sleep(self._config.frequency.seconds)
+                continue
             logger.info(
                 f"Wait {humanize.naturaldelta(self._config.frequency)} "
                 "before next check ..zzZZ..",
@@ -204,10 +198,10 @@ class Updater:
             del data["previous"]
 
         if self._config.telegram:
-            async with telegram.Bot(self._config.telegram["token"]) as bot:
+            async with telegram.Bot(self._config.telegram.token) as bot:
                 await bot.send_message(
-                    self._config.telegram["chat_id"],
-                    template.format(data),
+                    self._config.telegram.chat_id,
+                    template.format(**data),
                     parse_mode=telegram.constants.ParseMode.HTML,
                 )
 
@@ -237,11 +231,7 @@ class Updater:
                 address=record["data"],
             )
         except requests.RequestException as e:
-            message = str(e)
-            if isinstance(e, requests.HTTPError):
-                message = e.response.json()
-
             raise SudException(
-                f"Cannot add A record for {info.name} "
-                f"to zone {info.domain}: {message}",
-            )
+                f"Cannot add A record for `{info.name}` "
+                f"to zone `{info.domain}`: {str(e)}",
+            ) from e
